@@ -1,0 +1,17 @@
+.terraform
+*.tfstate.*backup
+*.terraform.tfstate.lock.*
+infra/env/*/terraform.tfstate
+
+*.zip
+*.pyc
+.Python
+*.pyc
+.coverage
+.noseids
+.python-version
+*.tmproj
+pylint.out
+target/
+
+*.iml
