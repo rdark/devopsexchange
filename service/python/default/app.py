@@ -9,14 +9,15 @@ from pydantic.dataclasses import dataclass
 
 
 @unique
-class Gender(IntEnum):
+class Sex(IntEnum):
     MALE = 0
     FEMALE = 1
+    OTHER = 2
 
 
 @dataclass
 class Config:
-    gender: Gender
+    sex: Sex
     metrics_host: str
     env_name: str
     hostname: str
@@ -25,15 +26,15 @@ class Config:
 class ConfigEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Config):
-            skip_keys = ('__initialised__', 'gender')
-            overrides = {'gender': obj.gender.name}
+            skip_keys = ('__initialised__', 'sex')
+            overrides = {'sex': obj.sex.name}
             main_dict = {k: v for k, v in obj.__dict__.items() if k not in skip_keys}
             return {**overrides, **main_dict}
         return json.JSONEncoder.default(self, obj)
 
 
 config = Config(
-    gender=getattr(Gender, os.environ['GENDER']),
+    sex=getattr(Sex, os.environ['SEX']),
     metrics_host=(os.getenv('METRICS_HOSTNAME', 'localhost')),
     env_name=os.environ['ENV_NAME'],
     hostname=os.environ['HOSTNAME'],
@@ -41,7 +42,7 @@ config = Config(
 
 statsd = DogStatsd(host=config.metrics_host)
 statsd.constant_tags = [
-    f'gender:{config.gender.name}',
+    f'sex:{config.sex.name}',
     f'hostname:{config.hostname}',
     f'env_name:{config.env_name}',
 ]

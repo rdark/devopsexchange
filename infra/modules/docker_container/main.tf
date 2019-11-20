@@ -2,7 +2,7 @@ resource "docker_container" "this" {
   count    = var.container_count
   name     = "${var.container_name_prefix}-${count.index + 1}"
   image    = "${var.image_repository}/${var.image_name}:${var.image_tag}"
-  env      = var.container_env
+  env      = length(var.container_envs) >= 1 ? var.container_envs[count.index] : var.container_env
   command  = length(var.container_commands) >= 1 ? var.container_commands[count.index] : var.container_command
   hostname = "${var.container_name_prefix}-${count.index + 1}"
 

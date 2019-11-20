@@ -15,6 +15,12 @@ variable "container_env" {
   default = []
 }
 
+variable "container_envs" {
+  type    = list(set(string))
+  description = "If present, used instead of container_env, mapped by index against container_count; must be equal in length to"
+  default = []
+}
+
 variable container_command {
   type    = list(string)
   default = []
