@@ -17,7 +17,7 @@ resource "docker_container" "this" {
   dynamic "ports" {
     for_each = var.port_map
     content {
-      internal = ports.key + count.index
+      internal = ports.key
       external = format("%d", split("/", ports.value)[0]) + count.index
       protocol = length(split("/", ports.value)) > 1 ? split("/", ports.value)[1] : "tcp"
     }
