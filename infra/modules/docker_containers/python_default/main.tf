@@ -1,5 +1,5 @@
 locals {
-  container_count = 3
+  container_count = 4
   python_container = {
     image_repo = "devopsexchange"
     image_name = "python-default"
@@ -9,7 +9,8 @@ locals {
     }
     env = [
       "METRICS_HOSTNAME=${var.metrics_hostname}",
-      "ENV_NAME=${var.env_name}"
+      "ENV_NAME=${var.env_name}",
+      "GENDER=FEMALE",
     ]
     command = ["./app.py"]
   }
@@ -44,9 +45,9 @@ module "siege_python_default_containers" {
   container_commands = [for pyname in module.python_default_containers.container_names :
     concat(local.siege_container.command_prefix,
       [
-        format("http://%s:%s",
+        format("http://%s:%s/config",
           pyname,
-          local.python_container["port_map"]["5000"]
+          "5000"
         )
     ])
   ]
