@@ -10,7 +10,6 @@ locals {
     env = [
       "METRICS_HOSTNAME=${var.metrics_hostname}",
       "ENV_NAME=${var.env_name}",
-      "GENDER=FEMALE",
     ]
     command = ["./app.py"]
   }
@@ -22,15 +21,25 @@ locals {
   }
 }
 
+resource "random_shuffle" "sex" {
+  input = ["MALE", "FEMALE", "OTHER"]
+  result_count = local.container_count
+}
+
 module "python_default_containers" {
   source                = "../../docker_container"
-  container_count       = local.container_count
+  container_count       = random_shuffle.sex.result_count
   container_name_prefix = local.python_container.image_name
   image_name            = local.python_container.image_name
   image_repository      = local.python_container.image_repo
   image_tag             = local.python_container.image_tag
   port_map              = local.python_container.port_map
-  container_env         = local.python_container.env
+  container_envs        = [for i in range(random_shuffle.sex.result_count) :
+    concat(
+      ["SEX=${random_shuffle.sex.result[i]}"],
+      local.python_container.env
+    )
+  ]
   container_command     = local.python_container.command
   network_name          = var.network_name
 }
